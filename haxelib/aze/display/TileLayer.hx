@@ -170,20 +170,20 @@ return index;
 
 
 /**
-* @private base tile type
-*/
+ * @private base tile type
+ */
 #if haxe3
-class TileBase
+	class TileBase
 #else
-class TileBase implements Public
+	class TileBase implements Public
 #end
 {
-public var layer:TileLayer;
-public var parent:TileGroup;
-public var x:Float;
-public var y:Float;
-public var animated:Bool;
-public var visible:Bool;
+	public var layer:TileLayer;
+	public var parent:TileGroup;
+	public var x:Float;
+	public var y:Float;
+	public var animated:Bool;
+	public var visible:Bool;
 
 function new(layer:TileLayer)
 {
@@ -208,65 +208,65 @@ function getView():DisplayObject { return null; }
 
 
 /**
-* @private render buffer
-*/
+ * @private render buffer
+ */
 #if haxe3
-class DrawList
+	class DrawList
 #else
-class DrawList implements Public
+	class DrawList implements Public
 #end
 {
-public var list:Array<Float>;
-public var index:Int;
-public var fields:Int;
-public var offsetTransform:Int;
-public var offsetRGB:Int;
-public var offsetAlpha:Int;
-public var flags:Int;
-public var time:Int;
-public var elapsed:Int;
-public var runs:Int;
+	public var list:Array<Float>;
+	public var index:Int;
+	public var fields:Int;
+	public var offsetTransform:Int;
+	public var offsetRGB:Int;
+	public var offsetAlpha:Int;
+	public var flags:Int;
+	public var time:Int;
+	public var elapsed:Int;
+	public var runs:Int;
 
-#if haxe3
-public function new()
-#else
-function new()
-#end
-{
-list = new Array<Float>();
-elapsed = 0;
-runs = 0;
-}
-
-#if haxe3
-public function begin(elapsed:Int, useTransforms:Bool, useAlpha:Bool, useTint:Bool, useAdditive:Bool)
-#else
-function begin(elapsed:Int, useTransforms:Bool, useAlpha:Bool, useTint:Bool, useAdditive:Bool)
-#end
-{
-#if !flash
-flags = 0;
-fields = 3;
-if (useTransforms) {
-offsetTransform = fields;
-fields += 4;
-flags |= Graphics.TILE_TRANS_2x2;
-}
-else offsetTransform = 0;
-if (useTint) {
-offsetRGB = fields;
-fields+=3;
-flags |= Graphics.TILE_RGB;
-}
-else offsetRGB = 0;
-if (useAlpha) {
-offsetAlpha = fields;
-fields++;
-flags |= Graphics.TILE_ALPHA;
-}
-else offsetAlpha = 0;
-if (useAdditive) flags |= Graphics.TILE_BLEND_ADD;
-#end
+	#if haxe3
+		public function new() 
+	#else
+		function new() 
+	#end
+	{
+		list = new Array<Float>();
+		elapsed = 0;
+		runs = 0;
+	}
+	
+	#if haxe3
+		public function begin(elapsed:Int, useTransforms:Bool, useAlpha:Bool, useTint:Bool, useAdditive:Bool) 
+	#else
+		function begin(elapsed:Int, useTransforms:Bool, useAlpha:Bool, useTint:Bool, useAdditive:Bool) 
+	#end
+	{
+		#if !flash
+		flags = 0;
+		fields = 3;
+		if (useTransforms) {
+			offsetTransform = fields;
+			fields += 4;
+			flags |= Graphics.TILE_TRANS_2x2;
+		}
+		else offsetTransform = 0;
+		if (useTint) {
+			offsetRGB = fields; 
+			fields+=3; 
+			flags |= Graphics.TILE_RGB;
+		}
+		else offsetRGB = 0;
+		if (useAlpha) {
+			offsetAlpha = fields; 
+			fields++; 
+			flags |= Graphics.TILE_ALPHA;
+		}
+		else offsetAlpha = 0;
+		if (useAdditive) flags |= Graphics.TILE_BLEND_ADD;
+		#end
 
 if (elapsed > 0) this.elapsed = elapsed;
 else
@@ -281,23 +281,24 @@ else time = Lib.getTimer();
 }
 }
 
-public function end()
-{
-if (list.length > index)
-{
-if (++runs > 60)
-{
-list.splice(index, list.length - index); // compact buffer
-runs = 0;
-}
-else
-{
-while (index < list.length)
-{
-list[index + 2] = -2.0; // set invalid ID
-index += fields;
-}
-}
-}
+	public function end()
+	{
+		if (list.length > index) 
+		{
+			if (++runs > 60) 
+			{
+				list.splice(index, list.length - index); // compact buffer
+				runs = 0;
+			}
+			else
+			{
+				while (index < list.length)
+				{
+					list[index + 2] = -2.0; // set invalid ID
+					index += fields;
+				}
+			}
+		}
+	}
 }
 }
