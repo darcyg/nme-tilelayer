@@ -8,17 +8,18 @@ import nme.geom.Rectangle;
 using StringTools;
 
 /**
-* A cross-targets Tilesheet container, with animation and trimming support
-*
-* - animations are matched by name (startsWith) and cached after 1st request,
-* - rect: marks the actual pixel content of the spritesheet that should be displayed for a sprite,
-* - size: original (before trimming) sprite dimensions are indicated by the size's (width,height);
-* rect offset inside the original sprite is indicated by size's (left,top).
-*
-* @author Philippe / http://philippe.elsass.me
-*/
+ * A cross-targets Tilesheet container, with animation and trimming support
+ *
+ * - animations are matched by name (startsWith) and cached after 1st request,
+ * - rect: marks the actual pixel content of the spritesheet that should be displayed for a sprite,
+ * - size: original (before trimming) sprite dimensions are indicated by the size's (width,height); 
+ *         rect offset inside the original sprite is indicated by size's (left,top).
+ *
+ * @author Philippe / http://philippe.elsass.me
+ */
 class TilesheetEx extends Tilesheet
 {
+	public var scale:Float;
 	var defs:Array<String>;
 	var sizes:Array<Rectangle>;
 
@@ -29,13 +30,15 @@ class TilesheetEx extends Tilesheet
 	#end
 
 	#if flash
-		var bmps:Array<BitmapData>;
+	var bmps:Array<BitmapData>;
 	#end
 
-	public function new(img:BitmapData)
+	public function new(img:BitmapData, textureScale:Float = 1.0)
 	{
 		super(img);
 
+		scale = 1/textureScale;
+		
 		defs = new Array<String>();
 
 		#if haxe3
@@ -62,6 +65,15 @@ class TilesheetEx extends Tilesheet
 	{
 		defs.push(name);
 		sizes.push(size);
+		if (scale != 1.0)
+		{
+			rect.x /= scale;
+			rect.y /= scale;
+			rect.width /= scale;
+			rect.height /= scale;
+			center.x /= scale;
+			center.y /= scale;
+		}
 		addTileRect(rect, center);
 	}
 	#end
@@ -73,7 +85,7 @@ class TilesheetEx extends Tilesheet
 		var indices = new Array<Int>();
 		for (i in 0...defs.length)
 		{
-			if (defs[i].startsWith(name))
+			if (defs[i].startsWith(name)) 
 				indices.push(i);
 		}
 		anims.set(name, indices);
@@ -128,11 +140,11 @@ class TilesheetEx extends Tilesheet
 			var image = images[i];
 			img.copyPixels(image, image.rect, pos, null, null, true);
 			#if flash
-				sheet.addDefinition(names[i], image.rect, image);
+			sheet.addDefinition(names[i], image.rect, image);
 			#else
-				var rect = new Rectangle(padding, pos.y, image.width, image.height);
-				var center = new Point(image.width/2, image.height/2);
-				sheet.addDefinition(names[i], image.rect, rect, center);
+			var rect = new Rectangle(padding, pos.y, image.width, image.height);
+			var center = new Point(image.width/2, image.height/2);
+			sheet.addDefinition(names[i], image.rect, rect, center);
 			#end
 			pos.y += image.height + spacing;
 		}
@@ -146,3 +158,5 @@ class TilesheetEx extends Tilesheet
 		return p;
 	}
 }
+
+
